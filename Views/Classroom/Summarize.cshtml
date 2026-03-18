@@ -1,0 +1,22 @@
+@model StudyHelperAPI.Models.Gemini.SummaryResult
+
+@{
+    ViewData["Title"] = "Resumo";
+}
+
+<h2>✨ Resumo — @ViewBag.Title</h2>
+
+@if (Model.Success)
+{
+    <div class="summary-box">
+        @Html.Raw(Model.Summary.Replace("\n", "<br/>"))
+    </div>
+}
+else
+{
+    <div class="error-box">
+        <p>❌ Erro ao gerar resumo: @Model.ErrorMessage</p>
+    </div>
+}
+
+<a href="javascript:history.back()" class="btn">← Voltar</a>

@@ -1,0 +1,36 @@
+@model List<StudyHelperAPI.Models.Classroom.ClassroomAssignment>
+
+@{
+    ViewData["Title"] = "Atividades";
+}
+
+<h2>📝 Atividades da Turma</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <p>Nenhuma atividade encontrada.</p>
+}
+else
+{
+    @foreach (var assignment in Model)
+    {
+        <div class="assignment-card @(assignment.DueDate.HasValue && assignment.DueDate.Value < DateTime.Now.AddDays(3) ? "urgent" : "")">
+            <h3>@assignment.Title</h3>
+            <p>@assignment.Description</p>
+            <div class="meta">
+                <span>⭐ @assignment.MaxPoints pontos</span>
+                @if (assignment.DueDate.HasValue)
+                {
+                    <span>📅 Vence: @assignment.DueDate.Value.ToString("dd/MM/yyyy")</span>
+                }
+            </div>
+
+            <form method="post" action="/Classroom/AnswerActivity">
+                <input type="hidden" name="assignmentId" value="@assignment.Id" />
+                <input type="hidden" name="context" value="@assignment.Description" />
+                <textarea name="question" placeholder="Cole a pergunta ou descreva a atividade..." rows="3"></textarea>
+                <button type="submit" class="btn">🤖 Resolver com IA</button>
+            </form>
+        </div>
+    }
+}

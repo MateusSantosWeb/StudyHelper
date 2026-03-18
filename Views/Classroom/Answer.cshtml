@@ -1,0 +1,18 @@
+@model string
+
+@{
+    ViewData["Title"] = "Resposta da IA";
+}
+
+<h2>🤖 Resposta da IA</h2>
+
+<div class="question-box">
+    <strong>Atividade:</strong>
+    <p>@ViewBag.Question</p>
+</div>
+
+<div class="answer-box">
+    @Html.Raw(Model.Replace("\n", "<br/>"))
+</div>
+
+<a href="javascript:history.back()" class="btn">← Voltar</a>

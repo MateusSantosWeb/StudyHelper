@@ -1,0 +1,82 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/mateus.santos@toshyro.local/RiderProjects/StudyHelper/StudyHelperAPI/StudyHelperAPI.csproj": {}
+  },
+  "projects": {
+    "/home/mateus.santos@toshyro.local/RiderProjects/StudyHelper/StudyHelperAPI/StudyHelperAPI.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/mateus.santos@toshyro.local/RiderProjects/StudyHelper/StudyHelperAPI/StudyHelperAPI.csproj",
+        "projectName": "StudyHelperAPI",
+        "projectPath": "/home/mateus.santos@toshyro.local/RiderProjects/StudyHelper/StudyHelperAPI/StudyHelperAPI.csproj",
+        "packagesPath": "/home/mateus.santos@toshyro.local/.nuget/packages/",
+        "outputPath": "/home/mateus.santos@toshyro.local/RiderProjects/StudyHelper/StudyHelperAPI/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/mateus.santos@toshyro.local/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Google.Apis.Auth": {
+              "target": "Package",
+              "version": "[1.73.0, )"
+            },
+            "Google.Apis.Classroom.v1": {
+              "target": "Package",
+              "version": "[1.73.0.4028, )"
+            },
+            "Microsoft.AspNetCore.SignalR": {
+              "target": "Package",
+              "version": "[1.2.9, )"
+            },
+            "WebPush": {
+              "target": "Package",
+              "version": "[1.0.12, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.125/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

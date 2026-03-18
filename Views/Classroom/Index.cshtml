@@ -1,0 +1,28 @@
+@model List<StudyHelperAPI.Models.Classroom.ClassroomCourse>
+
+@{
+    ViewData["Title"] = "Minhas Turmas";
+}
+
+<h2>🏫 Minhas Turmas</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <p>Nenhuma turma encontrada.</p>
+}
+else
+{
+    <div class="cards">
+        @foreach (var course in Model)
+        {
+            <div class="card">
+                <h3>@course.Name</h3>
+                <p>@course.Section</p>
+                <div class="actions">
+                    <a href="/Classroom/Materials/@course.Id" class="btn">📄 Materiais</a>
+                    <a href="/Classroom/Assignments/@course.Id" class="btn">📝 Atividades</a>
+                </div>
+            </div>
+        }
+    </div>
+}

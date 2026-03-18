@@ -1,0 +1,43 @@
+@model List<StudyHelperAPI.Models.Classroom.ClassroomAssignment>
+
+@{
+    ViewData["Title"] = "Atividades Pendentes";
+}
+
+<h2>⏰ Atividades Pendentes</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <p>✅ Nenhuma atividade pendente!</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Atividade</th>
+            <th>Turma</th>
+            <th>Vencimento</th>
+            <th>Pontos</th>
+            <th>Ação</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var assignment in Model)
+        {
+            var daysLeft = assignment.DueDate.HasValue
+                ? (assignment.DueDate.Value - DateTime.Now).TotalDays
+                : 999;
+            <tr class="@(daysLeft <= 1 ? "danger" : daysLeft <= 3 ? "warning" : "")">
+                <td>@assignment.Title</td>
+                <td>@assignment.CourseId</td>
+                <td>@(assignment.DueDate?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                <td>@assignment.MaxPoints</td>
+                <td>
+                    <a href="/Classroom/Assignments/@assignment.CourseId" class="btn">Ver</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

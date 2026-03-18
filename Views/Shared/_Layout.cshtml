@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — StudyHelper</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+</head>
+<body>
+<nav>
+    <a href="/" class="logo">📚 StudyHelper</a>
+    <div class="nav-links">
+        <a href="/Classroom">🏫 Turmas</a>
+        <a href="/Classroom/Pending">⏰ Pendentes</a>
+    </div>
+    <div id="notification-bell">🔔 <span id="notif-count">0</span></div>
+</nav>
+
+<div id="notification-panel" class="hidden">
+    <h4>Notificações</h4>
+    <ul id="notif-list"></ul>
+</div>
+
+<main class="container">
+    @RenderBody()
+</main>
+
+<script src="~/js/site.js"></script>
+</body>
+</html>

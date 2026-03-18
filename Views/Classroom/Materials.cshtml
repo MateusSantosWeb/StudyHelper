@@ -1,0 +1,40 @@
+@model List<StudyHelperAPI.Models.Classroom.ClassroomMaterial>
+
+@{
+    ViewData["Title"] = "Materiais";
+}
+
+<h2>📄 Materiais da Turma</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <p>Nenhum material encontrado.</p>
+}
+else
+{
+    @foreach (var material in Model)
+    {
+        <div class="material-card">
+            <h3>@material.Title</h3>
+            <p>@material.Description</p>
+            <small>📅 @material.CreatedAt.ToString("dd/MM/yyyy")</small>
+
+            @if (material.AttachmentUrls.Any())
+            {
+                <div class="attachments">
+                    @foreach (var url in material.AttachmentUrls)
+                    {
+                        <a href="@url" target="_blank" class="btn-outline">🔗 Abrir anexo</a>
+                    }
+                </div>
+            }
+
+            <form method="post" action="/Classroom/Summarize">
+                <input type="hidden" name="materialId" value="@material.Id" />
+                <input type="hidden" name="title" value="@material.Title" />
+                <textarea name="content" placeholder="Cole o conteúdo aqui para resumir..." rows="3"></textarea>
+                <button type="submit" class="btn">✨ Gerar Resumo com IA</button>
+            </form>
+        </div>
+    }
+}

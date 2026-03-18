@@ -1,11 +1,8 @@
-nano .gitignore
-```
-
-Cola isso dentro:
-```
 bin/
 obj/
-appsettings.json
 appsettings.Development.json
+appsettings.local.json
 *.user
 .env
+secrets.txt
+bfg-1.14.0.jar

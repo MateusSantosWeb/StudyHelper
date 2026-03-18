@@ -1,0 +1,11 @@
+nano .gitignore
+```
+
+Cola isso dentro:
+```
+bin/
+obj/
+appsettings.json
+appsettings.Development.json
+*.user
+.env

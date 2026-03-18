@@ -1,11 +1,22 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using StudyHelperAPI.Hubs;
 using StudyHelperAPI.Services;
 using StudyHelperAPI.Services.Interfaces;
-using StudyHelperAPI.Services;
-using StudyHelperAPI.Services.Interfaces;
-using NotificationHub = StudyHelperAPI.Hubs.NotificationHub;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var port = Environment.GetEnvironmentVariable("PORT");
+if (!string.IsNullOrWhiteSpace(port))
+{
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+}
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 // MVC
 builder.Services.AddControllersWithViews();
@@ -18,7 +29,6 @@ builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 
 // Services
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
-builder.Services.AddScoped<IGeminiService, GeminiService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // Background Service
@@ -32,6 +42,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseForwardedHeaders();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
+using StudyHelperAPI.Hubs;
 using StudyHelperAPI.Services.Interfaces;
 
 namespace StudyHelperAPI.Services;

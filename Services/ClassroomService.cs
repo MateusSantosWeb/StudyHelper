@@ -16,26 +16,62 @@ namespace StudyHelperAPI.Services;
             _configuration = configuration;
         }
 
-          private async Task<Google.Apis.Classroom.v1.ClassroomService> GetServiceAsync()
+        private async Task<Google.Apis.Classroom.v1.ClassroomService> GetServiceAsync()
         {
             if (_service != null) return _service;
 
-            var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                new ClientSecrets
+            var scopes = new[]
+            {
+                Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCoursesReadonly,
+                Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCourseworkStudentsReadonly,
+                Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCourseworkMeReadonly,
+                Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCourseworkmaterialsReadonly,
+                Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomRostersReadonly
+            };
+
+            GoogleCredential credential;
+
+            var serviceAccountJson = _configuration["Google:ServiceAccountJson"];
+            var serviceAccountPath = _configuration["Google:ServiceAccountPath"];
+            if (!string.IsNullOrWhiteSpace(serviceAccountJson) || !string.IsNullOrWhiteSpace(serviceAccountPath))
+            {
+                credential = !string.IsNullOrWhiteSpace(serviceAccountJson)
+                    ? GoogleCredential.FromJson(serviceAccountJson)
+                    : GoogleCredential.FromFile(serviceAccountPath!);
+
+                if (credential.IsCreateScopedRequired)
                 {
-                    ClientId = _configuration["Google:ClientId"],
-                    ClientSecret = _configuration["Google:ClientSecret"]
-                },
-                new[] {
-                    Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCoursesReadonly,
-                    Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCourseworkStudentsReadonly,
-                    Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCourseworkMeReadonly,
-                    Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCourseworkmaterialsReadonly,
-                    Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomRostersReadonly
-                },
-                "user",
-                CancellationToken.None
-            );
+                    credential = credential.CreateScoped(scopes);
+                }
+
+                var serviceAccountUser = _configuration["Google:ServiceAccountUser"];
+                if (!string.IsNullOrWhiteSpace(serviceAccountUser))
+                {
+                    credential = credential.CreateWithUser(serviceAccountUser);
+                }
+            }
+            else
+            {
+                var enableInteractive = _configuration.GetValue<bool?>("Google:EnableInteractiveAuth") ?? false;
+                if (!enableInteractive)
+                {
+                    throw new InvalidOperationException(
+                        "Autenticacao interativa desabilitada. Configure Google:ServiceAccountJson ou Google:ServiceAccountPath " +
+                        "(e opcionalmente Google:ServiceAccountUser) para usar em servidor."
+                    );
+                }
+
+                credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    new ClientSecrets
+                    {
+                        ClientId = _configuration["Google:ClientId"],
+                        ClientSecret = _configuration["Google:ClientSecret"]
+                    },
+                    scopes,
+                    "user",
+                    CancellationToken.None
+                );
+            }
 
             _service = new Google.Apis.Classroom.v1.ClassroomService(new BaseClientService.Initializer
             {

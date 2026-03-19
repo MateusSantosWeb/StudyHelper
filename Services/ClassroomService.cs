@@ -1,6 +1,7 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Classroom.v1;
 using Google.Apis.Services;
+using Newtonsoft.Json;
 using StudyHelperAPI.Models.Classroom;
 using StudyHelperAPI.Services.Interfaces;
 
@@ -20,54 +21,43 @@ namespace StudyHelperAPI.Services;
         {
             if (_service != null) return _service;
 
-            var scopes = new[]
+            var tokenJson = _configuration["Google:TokenJson"];
+            UserCredential credential;
+
+            if (!string.IsNullOrEmpty(tokenJson))
             {
-                Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCoursesReadonly,
-                Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCourseworkStudentsReadonly,
-                Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCourseworkMeReadonly,
-                Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomCourseworkmaterialsReadonly,
-                Google.Apis.Classroom.v1.ClassroomService.Scope.ClassroomRostersReadonly
-            };
+                var tokenResponse = JsonConvert.DeserializeObject
+                    <Google.Apis.Auth.OAuth2.Responses.TokenResponse>(tokenJson);
 
-            GoogleCredential credential;
-
-            var serviceAccountJson = _configuration["Google:ServiceAccountJson"];
-            var serviceAccountPath = _configuration["Google:ServiceAccountPath"];
-            if (!string.IsNullOrWhiteSpace(serviceAccountJson) || !string.IsNullOrWhiteSpace(serviceAccountPath))
-            {
-                credential = !string.IsNullOrWhiteSpace(serviceAccountJson)
-                    ? GoogleCredential.FromJson(serviceAccountJson)
-                    : GoogleCredential.FromFile(serviceAccountPath!);
-
-                if (credential.IsCreateScopedRequired)
-                {
-                    credential = credential.CreateScoped(scopes);
-                }
-
-                var serviceAccountUser = _configuration["Google:ServiceAccountUser"];
-                if (!string.IsNullOrWhiteSpace(serviceAccountUser))
-                {
-                    credential = credential.CreateWithUser(serviceAccountUser);
-                }
+                credential = new UserCredential(
+                    new Google.Apis.Auth.OAuth2.Flows.GoogleAuthorizationCodeFlow(
+                        new Google.Apis.Auth.OAuth2.Flows.GoogleAuthorizationCodeFlow.Initializer
+                        {
+                            ClientSecrets = new ClientSecrets
+                            {
+                                ClientId = _configuration["Google:ClientId"],
+                                ClientSecret = _configuration["Google:ClientSecret"]
+                            }
+                        }),
+                    "user",
+                    tokenResponse
+                );
             }
             else
             {
-                var enableInteractive = _configuration.GetValue<bool?>("Google:EnableInteractiveAuth") ?? false;
-                if (!enableInteractive)
-                {
-                    throw new InvalidOperationException(
-                        "Autenticacao interativa desabilitada. Configure Google:ServiceAccountJson ou Google:ServiceAccountPath " +
-                        "(e opcionalmente Google:ServiceAccountUser) para usar em servidor."
-                    );
-                }
-
                 credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
                     new ClientSecrets
                     {
                         ClientId = _configuration["Google:ClientId"],
                         ClientSecret = _configuration["Google:ClientSecret"]
                     },
-                    scopes,
+                    new[] {
+                        "https://www.googleapis.com/auth/classroom.courses.readonly",
+                        "https://www.googleapis.com/auth/classroom.coursework.students.readonly",
+                        "https://www.googleapis.com/auth/classroom.coursework.me.readonly",
+                        "https://www.googleapis.com/auth/classroom.courseworkmaterials.readonly",
+                        "https://www.googleapis.com/auth/classroom.rosters.readonly"
+                    },
                     "user",
                     CancellationToken.None
                 );
